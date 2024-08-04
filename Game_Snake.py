@@ -1,5 +1,5 @@
 import pygame
-import random
+from random import randrange
 
 #Config do Jogo
 pygame.init()
@@ -18,28 +18,30 @@ azul = (135, 206, 235)
 
 #Cobrinha
 tamanho_quadrado = 25
-velocidade_atualizacao = 10
-
-comidex = pygame.image.load("grade.png")
+velocidade_atualizacao = 12
 
 #Gerar comida
 def gerar_comida():
-    comida_x = round(random.randrange(0, largura - tamanho_quadrado) / 25.0) * 25.0
-    comida_y = round(random.randrange(0, altura - tamanho_quadrado) / 25.0) * 25.0
+    comida_x = round(randrange(0, largura - tamanho_quadrado) / 25.0) * 25.0
+    comida_y = round(randrange(0, altura - tamanho_quadrado) / 25.0) * 25.0
     return comida_x, comida_y
 
+#Desenhar comida
 def desenhar_comida(tamanho, comida_x, comida_y):
-    pygame.draw.rect(tela, verde, [comida_x, comida_y, tamanho, tamanho])
+    pygame.draw.circle(tela, vermelho, [comida_x + 10, comida_y + 10], 10)
 
-def desenhar_cobra(tamanho, pixels):
-    for pixel in pixels:
-        pygame.draw.rect(tela, azul, [pixel[0], pixel[1], tamanho, tamanho])
-
+#Desenhar pontuação
 def desenhar_pontuacao(pontuacao):
     fonte = pygame.font.SysFont("Impact", 25)
-    texto = fonte.render(f"   Pontos: {pontuacao}", True, branco)
-    tela.blit(texto, [10, 10])
+    texto = fonte.render(f"Pontos: {pontuacao}", True, branco)
+    tela.blit(texto, [15, 10])
 
+#Desenhar cobra
+def desenhar_cobra(tamanho, pixels):
+    for pixel in pixels:
+        pygame.draw.rect(tela, azul, [pixel[0], pixel[1], tamanho, tamanho,])
+
+#Controles
 def selecionar_velocidade(tecla):
     if tecla == pygame.K_DOWN:
         velocidade_x = 0
@@ -73,11 +75,12 @@ def rodar_jogo():
         
     while not fim_jogo:
 
+        #Fundo
         tela.fill(preto)
         fundo = pygame.image.load("grade.png")
         novo_fundo = pygame.transform.scale(fundo, (1400, 700))
         tela.blit(novo_fundo, (0, 0))
-                
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 fim_jogo = True
@@ -85,7 +88,7 @@ def rodar_jogo():
                 velocidade_x, velocidade_y = selecionar_velocidade(event.key)
 
         #desenhar comida
-        desenhar_comida(tamanho_quadrado, comida_x, comida_y)   
+        desenhar_comida(tamanho_quadrado, comida_x, comida_y)
 
         #Atualizar a posição da cobra
         if x < 0 or x >= largura or y < 0 or y >= altura:
@@ -112,7 +115,6 @@ def rodar_jogo():
         if x == comida_x and y == comida_y:
             tamanho_cobra += 1
             comida_x, comida_y = gerar_comida()
-         
         tempo.tick(velocidade_atualizacao)          
 rodar_jogo()
 
